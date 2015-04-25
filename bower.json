@@ -1,0 +1,26 @@
+{
+  "name": "mat-text-area",
+  "license": "BSD-3-Clause",
+  "version": "0.8.0",
+  "description": "This component is used to display a material text area.",
+  "authors": [
+    "Giuliano Rullo <g.rullo@expandjs.com>",
+    "Maurizio Stefàno <m.stefano@expandjs.com>",
+    "Robert Manolea <r.manolea@expandjs.com>"
+  ],
+  "main": [
+    "mat-text-area.html"
+  ],
+  "keywords": [
+    "web-components"
+  ],
+  "dependencies": {
+    "expandjs": "ExpandJS/expandjs",
+    "mat-input-decorator": "ExpandJS/mat-input-decorator",
+    "xp-input-state": "ExpandJS/xp-input-state",
+    "polymer": "Polymer/polymer#^0.5"
+  },
+  "devDependencies": {
+    "mat-demo": "ExpandJS/mat-demo"
+  }
+}

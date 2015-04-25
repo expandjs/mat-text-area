@@ -1,0 +1,528 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+This component is used to display a material text area.
+
+@component mat-text-area
+@description This component is used to display a material text area.
+
+@dependency polymer Polymer/polymer#^0.5
+@dependency expandjs ExpandJS/expandjs
+@dependency mat-input-decorator ExpandJS/mat-input-decorator
+@dependency xp-input-state ExpandJS/xp-input-state
+
+@devDependency mat-demo ExpandJS/mat-demo
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="../mat-input-decorator/mat-input-decorator.html">
+<link rel="import" href="../xp-input-state/xp-input-state.html">
+
+<polymer-element name="mat-text-area" constructor="MATTextAreaElement" attributes="autoFocus changed chars clean deburr description disabled empty emptyLabel error floated floatingLabel focused form format fullWidth inputElement inputValue invalid invalidMessage label maxLength maxRows minLength minRows name noTrim pattern readonly required value">
+
+    <template>
+        <style>
+            :host {
+                display: inline-block;
+                overflow: visible;
+                text-align: left;
+                width: 182px;
+            }
+
+            :host([fullWidth]) {
+                display: block;
+                width: auto !important;
+            }
+        </style>
+        <template context="{{}}" is="xp-input-state" id="xpInputState" changed="{{changed}}"
+                  disabled="{{disabled}}" empty="{{empty}}" error="{{error}}" focused="{{focused}}"
+                  form="{{form}}" inputElement="{{inputElement}}" inputValue="{{inputValue}}"
+                  invalid="{{invalid}}" invalidMessage="{{invalidMessage}}" name="{{name}}"
+                  opCommitFrom="{{commitFrom}}" opCommitTo="{{commitTo}}" opIndex="{{index}}"
+                  opSanitize="{{sanitize}}" opUpdate="{{update}}" opValidate="{{validate}}"
+                  readonly="{{readonly}}" required="{{required}}" value="{{value}}"></template>
+        <mat-input-decorator context="{{}}" id="matTextAreaDecorator" chars="{{chars}}" description="{{description}}"
+                             disabled="{{disabled}}" empty="{{empty}}" emptyLabel="{{emptyLabel}}" error="{{error}}"
+                             floated="{{floated}}" floatingLabel="{{floatingLabel}}" focused="{{focused}}"
+                             fullWidth="{{fullWidth}}" inputElement="{{inputElement}}" inputValue="{{inputValue}}"
+                             invalid="{{invalid}}" invalidMessage="{{invalidMessage}}" label="{{label}}"
+                             maxLength="{{maxLength}}" maxRows="{{maxRows}}" minRows="{{minRows}}" mirrored="{{true}}">
+            <content id="content" select="textarea"></content>
+        </mat-input-decorator>
+    </template>
+
+    <script>
+        XPComponent({
+
+            /**
+             * Focuses the input.
+             *
+             * @method focus
+             * @returns {Element}
+             */
+            focus: function () {
+                var self = this;
+                self.inputElement.focus();
+                return self;
+            },
+
+            /**
+             * Resets the input.
+             *
+             * @method reset
+             * @returns {Element}
+             */
+            reset: function () {
+                var self = this;
+                self.$.xpInputState.reset();
+                return self;
+            },
+
+            /**
+             * Selects the input.
+             *
+             * @method select
+             * @returns {Element}
+             */
+            select: function () {
+                var self = this;
+                self.inputElement.select();
+                return self;
+            },
+
+            /*********************************************************************/
+
+            /**
+             * Commits from input's value.
+             *
+             * @method commitFrom
+             * @returns {Element}
+             * @private
+             */
+            commitFrom: function () {
+                var self = this;
+                self.inputValue = self.inputElement.value;
+                return self;
+            },
+
+            /**
+             * Commits to input's value.
+             *
+             * @method commitTo
+             * @returns {Element}
+             * @private
+             */
+            commitTo: function () {
+                var self = this;
+                if (self.inputValue !== self.inputElement.value) { self.inputElement.value = self.inputValue; }
+                return self;
+            },
+
+            /**
+             * Indexes the input.
+             *
+             * @method index
+             * @param {number} value
+             * @returns {Element}
+             * @private
+             */
+            index: function (value) {
+                var self = this;
+                self.inputElement.tabIndex = value;
+                return self;
+            },
+
+            /**
+             * Sanitizes the input.
+             *
+             * @method sanitize
+             * @returns {Element}
+             * @private
+             */
+            sanitize: function () {
+                var self = this, val = self.inputValue;
+                val = self.clean ? XP.clean(val) : val;
+                val = self.deburr ? XP.deburr(val) : val;
+                val = self.format ? XP[self.format](val) : val;
+                val = !self.noTrim ? XP.trim(val) : val;
+                return XP.assign(self, {inputValue: val});
+            },
+
+            /**
+             * Updates the input.
+             *
+             * @method update
+             * @returns {Element}
+             * @private
+             */
+            update: function () {
+                var self = this;
+                XP.setAttribute(self.inputElement, 'disabled', self.disabled);
+                XP.setAttribute(self.inputElement, 'minLength', self.minLength);
+                XP.setAttribute(self.inputElement, 'name', self.name);
+                XP.setAttribute(self.inputElement, 'pattern', self.pattern);
+                XP.setAttribute(self.inputElement, 'readonly', self.readonly);
+                XP.setAttribute(self.inputElement, 'required', self.required);
+                return self;
+            },
+
+            /**
+             * Validates the input.
+             *
+             * @method validate
+             * @returns {Element}
+             * @private
+             */
+            validate: function () {
+                var self = this;
+                self.invalid        = self.inputElement.validity.valid === false;
+                self.invalidMessage = self.inputElement.validationMessage;
+                self.handleInput();
+                return self;
+            },
+
+            /*********************************************************************/
+
+            // OBSERVE
+            observe: {
+                'clean deburr format minLength pattern': '$.xpInputState.refresh'
+            },
+
+            // PUBLISH
+            publish: {
+
+                /**
+                 * If set to true, the input will focus on attach.
+                 *
+                 * @attribute autoFocus
+                 * @type boolean
+                 * @default false
+                 */
+                autoFocus: {reflect: true, value: false},
+
+                /**
+                 * If set to true, the input's value is changed.
+                 *
+                 * @attribute changed
+                 * @type boolean
+                 * @default false
+                 * @readonly
+                 */
+                changed: {reflect: true, value: false},
+
+                /**
+                 * The input's character counter.
+                 *
+                 * @attribute chars
+                 * @type number
+                 * @default 0
+                 * @readonly
+                 */
+                chars: {reflect: true, value: 0},
+
+                /**
+                 * If set to true, the input has no redundant space characters.
+                 *
+                 * @attribute clean
+                 * @type boolean
+                 * @default false
+                 */
+                clean: {reflect: true, value: false},
+
+                /**
+                 * If set to true, the diacritics will be replaced with standard latin characters.
+                 *
+                 * @attribute deburr
+                 * @type boolean
+                 * @default false
+                 */
+                deburr: {reflect: true, value: false},
+
+                /**
+                 * The input's description.
+                 *
+                 * @attribute description
+                 * @type string
+                 * @default ""
+                 */
+                description: {reflect: true, value: ''},
+
+                /**
+                 * If set to true, the input is disabled.
+                 *
+                 * @attribute disabled
+                 * @type boolean
+                 * @default false
+                 */
+                disabled: {reflect: true, value: false},
+
+                /**
+                 * If set to true, the input is empty.
+                 *
+                 * @attribute empty
+                 * @type boolean
+                 * @default false
+                 * @readonly
+                 */
+                empty: {reflect: true, value: false},
+
+                /**
+                 * If set to true, the label is hidden.
+                 *
+                 * @attribute emptyLabel
+                 * @type boolean
+                 * @default false
+                 * @readonly
+                 */
+                emptyLabel: {reflect: true, value: false},
+
+                /**
+                 * The input's custom error message, used instead of `invalidMessage`.
+                 *
+                 * @attribute error
+                 * @type string
+                 * @default ""
+                 */
+                error: {reflect: true, value: ''},
+
+                /**
+                 * If set to true, the input's label is floated.
+                 *
+                 * @attribute floated
+                 * @type boolean
+                 * @default false
+                 * @readonly
+                 */
+                floated: {reflect: true, value: false},
+
+                /**
+                 * If set to true, the input's label will float above the input.
+                 *
+                 * @attribute floatingLabel
+                 * @type boolean
+                 * @default false
+                 */
+                floatingLabel: {reflect: true, value: false},
+
+                /**
+                 * If set to true, the input is focused.
+                 *
+                 * @attribute focused
+                 * @type boolean
+                 * @default false
+                 */
+                focused: {reflect: true, value: false},
+
+                /**
+                 * The input's form.
+                 *
+                 * @attribute form
+                 * @type Element
+                 * @readonly
+                 */
+                form: {reflect: false, value: null},
+
+                /**
+                 * The input's format.
+                 *
+                 * @attribute format
+                 * @type "camelCase" | "capitalize" | "kebabCase" | "keyCase" | "lowerCase" | "readable" | "snakeCase" | "startCase" | "upperCase"
+                 * @default ""
+                 */
+                format: {reflect: true, value: ''},
+
+                /**
+                 * If set to true, the input is full width.
+                 *
+                 * @attribute fullWidth
+                 * @type boolean
+                 * @default false
+                 */
+                fullWidth: {reflect: true, value: false},
+
+                /**
+                 * The appended input's element.
+                 *
+                 * @attribute inputElement
+                 * @type Element
+                 * @readonly
+                 */
+                inputElement: {reflect: false, value: null},
+
+                /**
+                 * The input's plain value.
+                 *
+                 * @attribute inputValue
+                 * @type string
+                 * @default ""
+                 */
+                inputValue: {reflect: false, value: ''},
+
+                /**
+                 * If set to true, the input's value is not valid.
+                 *
+                 * @attribute invalid
+                 * @type boolean
+                 * @default false
+                 * @readonly
+                 */
+                invalid: {reflect: true, value: false},
+
+                /**
+                 * The input's system error message.
+                 *
+                 * @attribute invalidMessage
+                 * @type string
+                 * @default ""
+                 * @readonly
+                 */
+                invalidMessage: {reflect: true, value: ''},
+
+                /**
+                 * The input's label.
+                 *
+                 * @attribute label
+                 * @type string
+                 * @default ""
+                 */
+                label: {reflect: false, value: ''},
+
+                /**
+                 * The input's max characters number.
+                 *
+                 * @attribute maxLength
+                 * @type number
+                 */
+                maxLength: {reflect: true, value: null},
+
+                /**
+                 * The input's max rows number, `0` for unlimited rows.
+                 *
+                 * @attribute maxRows
+                 * @type number
+                 * @default 0
+                 */
+                maxRows: {reflect: true, value: 0},
+
+                /**
+                 * The input's min characters number.
+                 *
+                 * @attribute minLength
+                 * @type number
+                 */
+                minLength: {reflect: true, value: null},
+
+                /**
+                 * The input's min rows number.
+                 *
+                 * @attribute minRows
+                 * @type number
+                 * @default 1
+                 */
+                minRows: {reflect: true, value: 1},
+
+                /**
+                 * The input's name.
+                 *
+                 * @attribute name
+                 * @type string
+                 * @default ""
+                 */
+                name: {reflect: true, value: ''},
+
+                /**
+                 * If set to true, the input's value will not be trimmed.
+                 *
+                 * @attribute noTrim
+                 * @type boolean
+                 * @default false
+                 */
+                noTrim: {reflect: true, value: false},
+
+                /**
+                 * The input's validation pattern.
+                 *
+                 * @attribute pattern
+                 * @type string
+                 */
+                pattern: {reflect: true, value: null},
+
+                /**
+                 * If set to true, the input is readonly.
+                 *
+                 * @attribute readonly
+                 * @type boolean
+                 * @default false
+                 */
+                readonly: {reflect: true, value: false},
+
+                /**
+                 * If set to true, the input is required.
+                 *
+                 * @attribute required
+                 * @type boolean
+                 * @default false
+                 */
+                required: {reflect: true, value: false},
+
+                /**
+                 * The input's value.
+                 *
+                 * @attribute value
+                 * @type *
+                 */
+                value: {reflect: false, value: null}
+            },
+
+            /**
+             * The list of formats.
+             *
+             * @property formats
+             * @type Array
+             * @default ["camelCase", "capitalize", "kebabCase", "keyCase", "lowerCase", "readable", "snakeCase", "startCase", "upperCase"]
+             * @readonly
+             */
+            formats: ['camelCase', 'capitalize', 'kebabCase', 'keyCase', 'lowerCase', 'readable', 'snakeCase', 'startCase', 'upperCase'],
+
+            /*********************************************************************/
+
+            // LISTENER
+            attached: function () {
+                var self = this;
+                self.form    = XP.findParentElement(self, 'form');
+                self.invalid = false;
+                if (self.autoFocus) { XP.delay(function () { self.focus(); }); }
+            },
+
+            // LISTENER
+            detached: function () {
+                this.form = null;
+            },
+
+            // LISTENER
+            ready: function () {
+                var self = this;
+                self.inputElement = self.appendChild(XP.createElement('textarea', {attributes: {value: self.inputValue}}));
+                XP.listen(self.inputElement, 'input', self.handleInput.bind(self));
+            },
+
+            /*********************************************************************/
+
+            // HANDLER
+            handleInput: function () {
+                var self = this;
+                self.chars   = self.inputElement.value.length;
+                self.empty   = self.inputElement.value.length === 0;
+                self.invalid = self.invalidMessage.length !== 0 || (self.maxLength > 0 && self.chars > self.maxLength);
+            }
+        });
+    </script>
+
+</polymer-element>
