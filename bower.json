@@ -1,7 +1,7 @@
 {
   "name": "mat-text-area",
   "license": "BSD-3-Clause",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "This element is used to display a material text area.",
   "homepage": "http://www.expandjs.com/elements/mat-text-area",
   "authors": [
