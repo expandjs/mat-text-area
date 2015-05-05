@@ -27,7 +27,7 @@ This element is used to display a material text area.
 <link rel="import" href="../mat-input-decorator/mat-input-decorator.html">
 <link rel="import" href="../xp-input-state/xp-input-state.html">
 
-<polymer-element name="mat-text-area" constructor="MATTextAreaElement" attributes="autoFocus changed chars clean deburr description disabled empty emptyLabel error floated floatingLabel focused form format fullWidth inputElement inputValue invalid invalidMessage label maxLength maxRows minLength minRows name noTrim pattern readonly required value">
+<polymer-element name="mat-text-area" constructor="MATTextAreaElement" attributes="autoFocus changed chars clean deburr description disabled empty emptyLabel error floated floatingLabel focused form format fullWidth injected invalid invalidMessage label maxLength maxRows minLength minRows model name noTrim pattern readonly required value">
 
     <template>
         <style>
@@ -43,19 +43,18 @@ This element is used to display a material text area.
                 width: auto !important;
             }
         </style>
-        <template context="{{}}" is="xp-input-state" id="xpInputState" changed="{{changed}}"
-                  disabled="{{disabled}}" empty="{{empty}}" error="{{error}}" focused="{{focused}}"
-                  form="{{form}}" inputElement="{{inputElement}}" inputValue="{{inputValue}}"
-                  invalid="{{invalid}}" invalidMessage="{{invalidMessage}}" name="{{name}}"
-                  opCommitFrom="{{commitFrom}}" opCommitTo="{{commitTo}}" opIndex="{{index}}"
-                  opSanitize="{{sanitize}}" opUpdate="{{update}}" opValidate="{{validate}}"
-                  readonly="{{readonly}}" required="{{required}}" value="{{value}}"></template>
+        <template context="{{}}" is="xp-input-state" id="xpInputState" changed="{{changed}}" disabled="{{disabled}}"
+                  empty="{{empty}}" error="{{error}}" focused="{{focused}}" form="{{form}}" injected="{{injected}}"
+                  invalid="{{invalid}}" invalidMessage="{{invalidMessage}}" model="{{model}}" name="{{name}}"
+                  opCommitFrom="{{commitFrom}}" opCommitTo="{{commitTo}}" opIndex="{{index}}" opSanitize="{{sanitize}}"
+                  opUpdate="{{update}}" opValidate="{{validate}}" readonly="{{readonly}}" required="{{required}}"
+                  value="{{value}}"></template>
         <mat-input-decorator context="{{}}" id="matTextAreaDecorator" chars="{{chars}}" description="{{description}}"
                              disabled="{{disabled}}" empty="{{empty}}" emptyLabel="{{emptyLabel}}" error="{{error}}"
                              floated="{{floated}}" floatingLabel="{{floatingLabel}}" focused="{{focused}}"
-                             fullWidth="{{fullWidth}}" inputElement="{{inputElement}}" inputValue="{{inputValue}}"
-                             invalid="{{invalid}}" invalidMessage="{{invalidMessage}}" label="{{label}}"
-                             maxLength="{{maxLength}}" maxRows="{{maxRows}}" minRows="{{minRows}}" mirrored="{{true}}">
+                             fullWidth="{{fullWidth}}" injected="{{injected}}" invalid="{{invalid}}"
+                             invalidMessage="{{invalidMessage}}" label="{{label}}" maxLength="{{maxLength}}"
+                             maxRows="{{maxRows}}" minRows="{{minRows}}" mirrored="{{true}}" value="{{value}}">
             <content id="content" select="textarea"></content>
         </mat-input-decorator>
     </template>
@@ -71,7 +70,7 @@ This element is used to display a material text area.
              */
             focus: function () {
                 var self = this;
-                self.inputElement.focus();
+                self.injected.focus();
                 return self;
             },
 
@@ -95,7 +94,7 @@ This element is used to display a material text area.
              */
             select: function () {
                 var self = this;
-                self.inputElement.select();
+                self.injected.select();
                 return self;
             },
 
@@ -110,7 +109,7 @@ This element is used to display a material text area.
              */
             commitFrom: function () {
                 var self = this;
-                self.inputValue = self.inputElement.value;
+                self.value = self.injected.value;
                 return self;
             },
 
@@ -123,7 +122,7 @@ This element is used to display a material text area.
              */
             commitTo: function () {
                 var self = this;
-                if (self.inputValue !== self.inputElement.value) { self.inputElement.value = self.inputValue; }
+                if (self.value !== self.injected.value) { self.injected.value = self.value; }
                 return self;
             },
 
@@ -137,7 +136,7 @@ This element is used to display a material text area.
              */
             index: function (value) {
                 var self = this;
-                self.inputElement.tabIndex = value;
+                self.injected.tabIndex = value;
                 return self;
             },
 
@@ -149,12 +148,12 @@ This element is used to display a material text area.
              * @private
              */
             sanitize: function () {
-                var self = this, val = self.inputValue;
+                var self = this, val = self.value;
                 val = self.clean ? XP.clean(val) : val;
                 val = self.deburr ? XP.deburr(val) : val;
                 val = self.format ? XP[self.format](val) : val;
                 val = !self.noTrim ? XP.trim(val) : val;
-                return XP.assign(self, {inputValue: val});
+                return XP.assign(self, {value: val});
             },
 
             /**
@@ -166,12 +165,12 @@ This element is used to display a material text area.
              */
             update: function () {
                 var self = this;
-                XP.setAttribute(self.inputElement, 'disabled', self.disabled);
-                XP.setAttribute(self.inputElement, 'minLength', self.minLength);
-                XP.setAttribute(self.inputElement, 'name', self.name);
-                XP.setAttribute(self.inputElement, 'pattern', self.pattern);
-                XP.setAttribute(self.inputElement, 'readonly', self.readonly);
-                XP.setAttribute(self.inputElement, 'required', self.required);
+                XP.setAttribute(self.injected, 'disabled', self.disabled);
+                XP.setAttribute(self.injected, 'minLength', self.minLength);
+                XP.setAttribute(self.injected, 'name', self.name);
+                XP.setAttribute(self.injected, 'pattern', self.pattern);
+                XP.setAttribute(self.injected, 'readonly', self.readonly);
+                XP.setAttribute(self.injected, 'required', self.required);
                 return self;
             },
 
@@ -184,8 +183,8 @@ This element is used to display a material text area.
              */
             validate: function () {
                 var self = this;
-                self.invalid        = self.inputElement.validity.valid === false;
-                self.invalidMessage = self.inputElement.validationMessage;
+                self.invalid        = self.injected.validity.valid === false;
+                self.invalidMessage = self.injected.validationMessage;
                 self.handleInput();
                 return self;
             },
@@ -352,20 +351,11 @@ This element is used to display a material text area.
                 /**
                  * The appended input's element.
                  *
-                 * @attribute inputElement
+                 * @attribute injected
                  * @type Element
                  * @readonly
                  */
-                inputElement: {reflect: false, value: null},
-
-                /**
-                 * The input's plain value.
-                 *
-                 * @attribute inputValue
-                 * @type string
-                 * @default ""
-                 */
-                inputValue: {reflect: false, value: ''},
+                injected: {reflect: false, value: null},
 
                 /**
                  * If set to true, the input's value is not valid.
@@ -431,6 +421,14 @@ This element is used to display a material text area.
                 minRows: {reflect: true, value: 1},
 
                 /**
+                 * The input's model.
+                 *
+                 * @attribute model
+                 * @type *
+                 */
+                model: {reflect: false, value: null},
+
+                /**
                  * The input's name.
                  *
                  * @attribute name
@@ -475,12 +473,13 @@ This element is used to display a material text area.
                 required: {reflect: true, value: false},
 
                 /**
-                 * The input's value.
+                 * The input's plain value.
                  *
                  * @attribute value
-                 * @type *
+                 * @type string
+                 * @default ""
                  */
-                value: {reflect: false, value: null}
+                value: {reflect: false, value: ''}
             },
 
             /**
@@ -511,8 +510,8 @@ This element is used to display a material text area.
             // LISTENER
             ready: function () {
                 var self = this;
-                self.inputElement = self.appendChild(XP.createElement('textarea', {attributes: {value: self.inputValue}}));
-                XP.listen(self.inputElement, 'input', self.handleInput.bind(self));
+                self.injected = self.appendChild(XP.createElement('textarea', {attributes: {value: self.value}}));
+                XP.listen(self.injected, 'input', self.handleInput.bind(self));
             },
 
             /*********************************************************************/
@@ -520,8 +519,8 @@ This element is used to display a material text area.
             // HANDLER
             handleInput: function () {
                 var self = this;
-                self.chars   = self.inputElement.value.length;
-                self.empty   = self.inputElement.value.length === 0;
+                self.chars   = self.injected.value.length;
+                self.empty   = self.injected.value.length === 0;
                 self.invalid = self.invalidMessage.length !== 0 || (self.maxLength > 0 && self.chars > self.maxLength);
             }
         });
