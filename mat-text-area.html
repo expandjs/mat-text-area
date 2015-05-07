@@ -499,7 +499,7 @@ This element is used to display a material text area.
                 var self = this;
                 self.form    = XP.findParentElement(self, 'form');
                 self.invalid = false;
-                if (self.autoFocus) { XP.delay(function () { self.focus(); }); }
+                if (self.autoFocus) { XP.requestAnimationFrame(function () { self.focus(); }); }
             },
 
             // LISTENER
