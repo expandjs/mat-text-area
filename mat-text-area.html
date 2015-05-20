@@ -12,8 +12,8 @@ This element is used to display a material text area.
 @element mat-text-area
 @description A custom element used to display a Material Design auto growing text-field
 @group inputs
-@homepage http://www.expandjs.com/elements/mat-text-area
-@demo http://www.expandjs.com/demo/mat-text-area
+@homepage http://expandjs.com/elements/mat-text-area
+@demo http://expandjs.com/demo/mat-text-area
 
 @dependency polymer Polymer/polymer#^0.5
 @dependency expandjs ExpandJS/expandjs
@@ -62,6 +62,18 @@ This element is used to display a material text area.
 
     <script>
         XPElement({
+
+            /**
+             * Blurs the input.
+             *
+             * @method blur
+             * @returns {Element}
+             */
+            blur: function () {
+                var self = this;
+                self.injected.focus();
+                return self;
+            },
 
             /**
              * Focuses the input.
