@@ -1,0 +1,441 @@
+<!--
+@license
+Copyright (c) 2015 The ExpandJS authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+This element is used to display a material text area.
+
+@element mat-text-area
+@description A custom element used to display a Material Design auto growing text-field
+@keywords material design, material text area, material input, web app, html5, expandjs, web-components
+@group inputs
+@homepage http://expandjs.com/elements/mat-text-area
+@demo http://expandjs.com/demo/mat-text-area
+
+@behavior xp-input-behavior http://expandjs.com/elements/xp-input-behavior
+
+@dependency polymer Polymer/polymer
+@dependency expandjs ExpandJS/expandjs
+@dependency mat-input-decorator ExpandJS/mat-input-decorator
+@dependency xp-input-behavior ExpandJS/xp-input-behavior
+
+@devDependency mat-demo ExpandJS/mat-demo
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="../mat-input-decorator/mat-input-decorator.html">
+<link rel="import" href="../xp-input-behavior/xp-input-behavior.html">
+
+<dom-module id="mat-text-area">
+
+    <style>
+        :host {
+            display: inline-block;
+            overflow: visible;
+            text-align: left;
+            width: 182px;
+        }
+
+        :host([full-width]) {
+            display: block;
+            width: auto !important;
+        }
+    </style>
+
+    <template>
+        <mat-input-decorator id="matTextAreaDecorator" chars="[[chars]]" description="[[description]]"
+                             disabled="[[disabled]]" empty="[[empty]]" error="[[error]]" floated="{{floated}}"
+                             floating-label="[[floatingLabel]]" focused="[[focused]]" full-width="[[fullWidth]]"
+                             injected="[[injected]]" invalid="[[invalid]]" invalid-message="[[invalidMessage]]"
+                             label="[[label]]" max-length="[[maxLength]]" max-rows="[[maxRows]]"
+                             min-rows="[[minRows]]" mirrored value="[[value]]">
+            <content id="content" select="textarea"></content>
+        </mat-input-decorator>
+    </template>
+
+    <script>
+        Polymer({
+
+            // ELEMENT
+            is: 'mat-text-area',
+
+            // BEHAVIORS
+            behaviors: [
+                Polymer.XPInputBehavior
+            ],
+
+            /*********************************************************************/
+
+            /**
+             * Blurs the input.
+             *
+             * @method blur
+             * @returns {Element}
+             */
+            blur: function () {
+                var self = this;
+                self.injected.focus();
+                return self;
+            },
+
+            /**
+             * Focuses the input.
+             *
+             * @method focus
+             * @returns {Element}
+             */
+            focus: function () {
+                var self = this;
+                self.injected.focus();
+                return self;
+            },
+
+            /**
+             * Selects the input.
+             *
+             * @method select
+             * @returns {Element}
+             */
+            select: function () {
+                var self = this;
+                self.injected.select();
+                return self;
+            },
+
+            /*********************************************************************/
+
+            /**
+             * Commits from input's value.
+             *
+             * @method _commitFrom
+             * @returns {Element}
+             * @private
+             */
+            _commitFrom: function () {
+                var self = this;
+                self.value = self.injected.value;
+                return self;
+            },
+
+            /**
+             * Commits to input's value.
+             *
+             * @method _commitTo
+             * @returns {Element}
+             * @private
+             */
+            _commitTo: function () {
+                var self = this;
+                if (self.value !== self.injected.value) { self.injected.value = self.value; }
+                return self;
+            },
+
+            /**
+             * Indexes the input.
+             *
+             * @method _index
+             * @param {number} value
+             * @returns {Element}
+             * @private
+             */
+            _index: function (value) {
+                var self = this;
+                self.injected.tabIndex = value;
+                return self;
+            },
+
+            /**
+             * Injects the input element.
+             *
+             * @method _inject
+             * @returns {Element}
+             * @private
+             */
+            _inject: function () {
+                var self = this;
+                self._setInjected(XP.appendChild(Polymer.dom(self), XP.createElement('textarea', {attributes: {value: self.value}})));
+                self.listen(self.injected, 'input', '_handleInput');
+                return self;
+            },
+
+            /**
+             * Sanitizes the input.
+             *
+             * @method _sanitize
+             * @returns {Element}
+             * @private
+             */
+            _sanitize: function () {
+                var self = this, val = self.value;
+                val = self.clean ? XP.clean(val) : val;
+                val = self.deburr ? XP.deburr(val) : val;
+                val = self.format ? XP[self.format](val) : val;
+                val = !self.noTrim ? XP.trim(val) : val;
+                return XP.assign(self, {value: val});
+            },
+
+            /**
+             * Updates the input.
+             *
+             * @method _update
+             * @returns {Element}
+             * @private
+             */
+            _update: function () {
+                var self = this;
+                XP.setAttribute(self.injected, 'disabled', self.disabled);
+                XP.setAttribute(self.injected, 'minLength', self.minLength);
+                XP.setAttribute(self.injected, 'name', self.name);
+                XP.setAttribute(self.injected, 'pattern', self.pattern);
+                XP.setAttribute(self.injected, 'readonly', self.readonly);
+                XP.setAttribute(self.injected, 'required', self.required);
+                return self;
+            },
+
+            /**
+             * Validates the input.
+             *
+             * @method _validate
+             * @returns {Element}
+             * @private
+             */
+            _validate: function () {
+                var self = this;
+                self._setInvalid(self.injected.validity.valid === false);
+                self._setInvalidMessage(self.injected.validationMessage || null);
+                self._handleInput();
+                return self;
+            },
+
+            /*********************************************************************/
+
+            // OBSERVERS
+            observers: [
+                '_refresh(clean, deburr, format, minLength, pattern)'
+            ],
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * If set to true, the input has no redundant space characters.
+                 *
+                 * @attribute clean
+                 * @type boolean
+                 * @default false
+                 */
+                clean: {
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * If set to true, the diacritics will be replaced with standard latin characters.
+                 *
+                 * @attribute deburr
+                 * @type boolean
+                 * @default false
+                 */
+                deburr: {
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * The input's description.
+                 *
+                 * @attribute description
+                 * @type string
+                 */
+                description: {
+                    reflectToAttribute: true,
+                    type: String,
+                    value: null
+                },
+
+                /**
+                 * If set to true, the input's label is floated.
+                 *
+                 * @attribute floated
+                 * @type boolean
+                 * @notifies
+                 * @readonly
+                 */
+                floated: {
+                    notify: true,
+                    reflectToAttribute: true,
+                    type: Boolean
+                },
+
+                /**
+                 * If set to true, the input's label will float above the input.
+                 *
+                 * @attribute floating-label
+                 * @type boolean
+                 * @default false
+                 */
+                floatingLabel: {
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * The input's format.
+                 *
+                 * @attribute format
+                 * @type "camelCase" | "capitalize" | "kebabCase" | "keyCase" | "lowerCase" | "readable" | "snakeCase" | "startCase" | "upperCase"
+                 */
+                format: {
+                    reflectToAttribute: true,
+                    type: String,
+                    value: null
+                },
+
+                /**
+                 * If set to true, the input is full width.
+                 *
+                 * @attribute full-width
+                 * @type boolean
+                 * @default false
+                 */
+                fullWidth: {
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * The input's max characters number.
+                 *
+                 * @attribute max-length
+                 * @type number
+                 */
+                maxLength: {
+                    reflectToAttribute: true,
+                    type: Number,
+                    value: null
+                },
+
+                /**
+                 * The input's max rows number, `0` for unlimited rows.
+                 *
+                 * @attribute max-rows
+                 * @type number
+                 */
+                maxRows: {
+                    reflectToAttribute: true,
+                    type: Number,
+                    value: null
+                },
+
+                /**
+                 * The input's min characters number.
+                 *
+                 * @attribute min-length
+                 * @type number
+                 */
+                minLength: {
+                    reflectToAttribute: true,
+                    type: Number,
+                    value: null
+                },
+
+                /**
+                 * The input's min rows number.
+                 *
+                 * @attribute min-rows
+                 * @type number
+                 */
+                minRows: {
+                    reflectToAttribute: true,
+                    type: Number,
+                    value: null
+                },
+
+                /**
+                 * If set to true, the input's value will not be trimmed.
+                 *
+                 * @attribute no-trim
+                 * @type boolean
+                 * @default false
+                 */
+                noTrim: {
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * The input's validation pattern.
+                 *
+                 * @attribute pattern
+                 * @type string
+                 */
+                pattern: {
+                    reflectToAttribute: true,
+                    type: String,
+                    value: null
+                },
+
+                /**
+                 * If set to true, the input is readonly.
+                 *
+                 * @attribute readonly
+                 * @type boolean
+                 * @default false
+                 */
+                readonly: {
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * If set to true, the input is required.
+                 *
+                 * @attribute required
+                 * @type boolean
+                 * @default false
+                 */
+                required: {
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
+                }
+            },
+
+            /**
+             * The list of formats.
+             *
+             * @property formats
+             * @type Array
+             * @default ["camelCase", "capitalize", "kebabCase", "keyCase", "lowerCase", "readable", "snakeCase", "startCase", "upperCase"]
+             * @readonly
+             */
+            formats: ['camelCase', 'capitalize', 'kebabCase', 'keyCase', 'lowerCase', 'readable', 'snakeCase', 'startCase', 'upperCase'],
+
+            /*********************************************************************/
+
+            // HANDLER
+            _handleInput: function () {
+
+                // Vars
+                var self = this;
+
+                // Setting
+                self._setChars(self.injected.value.length);
+                self._setEmpty(self.injected.value.length === 0);
+                self._setInvalid(!!self.invalidMessage || (self.maxLength > 0 && self.chars > self.maxLength));
+            }
+        });
+    </script>
+
+</dom-module>

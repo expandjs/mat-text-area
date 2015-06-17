@@ -1,0 +1,36 @@
+{
+  "name": "mat-text-area",
+  "license": "BSD-3-Clause",
+  "version": "0.9.0",
+  "description": "A custom element used to display a Material Design auto growing text-field",
+  "homepage": "http://expandjs.com/elements/mat-text-area",
+  "authors": [
+    "Giuliano Rullo <g.rullo@expandjs.com>",
+    "Maurizio Stefàno <m.stefano@expandjs.com>",
+    "Robert Manolea <r.manolea@expandjs.com>"
+  ],
+  "keywords": [
+    "material design",
+    "material text area",
+    "material input",
+    "web app",
+    "html5",
+    "expandjs",
+    "web-components"
+  ],
+  "main": [
+    "mat-text-area.html"
+  ],
+  "ignore": [
+    "**/.*"
+  ],
+  "dependencies": {
+    "expandjs": "ExpandJS/expandjs",
+    "mat-input-decorator": "ExpandJS/mat-input-decorator",
+    "xp-input-behavior": "ExpandJS/xp-input-behavior",
+    "polymer": "Polymer/polymer"
+  },
+  "devDependencies": {
+    "mat-demo": "ExpandJS/mat-demo"
+  }
+}
