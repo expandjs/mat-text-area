@@ -28,7 +28,7 @@
     "expandjs": "ExpandJS/expandjs#0.9.1",
     "mat-input-decorator": "ExpandJS/mat-input-decorator#0.9.1",
     "xp-input-behavior": "ExpandJS/xp-input-behavior#0.9.1",
-    "polymer": "Polymer/polymer#^1.0.4"
+    "polymer": "Polymer/polymer#^1.0.0"
   },
   "devDependencies": {
     "mat-demo": "ExpandJS/mat-demo#0.9.1"
