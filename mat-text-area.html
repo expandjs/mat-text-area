@@ -19,11 +19,11 @@ This element is used to display a material text area.
 @behavior xp-input-behavior http://expandjs.com/elements/xp-input-behavior
 
 @dependency polymer Polymer/polymer#^1.0.0
-@dependency expandjs ExpandJS/expandjs#0.9.1
-@dependency mat-input-decorator ExpandJS/mat-input-decorator#0.9.1
-@dependency xp-input-behavior ExpandJS/xp-input-behavior#0.9.1
+@dependency expandjs ExpandJS/expandjs#0.9.2
+@dependency mat-input-decorator ExpandJS/mat-input-decorator#0.9.2
+@dependency xp-input-behavior ExpandJS/xp-input-behavior#0.9.2
 
-@devDependency mat-demo ExpandJS/mat-demo#0.9.1
+@devDependency mat-demo ExpandJS/mat-demo#0.9.2
 -->
 
 <link rel="import" href="../polymer/polymer.html">
@@ -43,7 +43,19 @@ This element is used to display a material text area.
 
         :host([full-width]) {
             display: block;
+            margin: 0;
+            padding: 0 16px;
             width: auto !important;
+        }
+
+        /* TABLET */
+
+        @media (min-width: 960px) {
+
+            :host([full-width]) {
+                margin: 0;
+                padding: 0 24px;
+            }
         }
     </style>
 
@@ -175,7 +187,7 @@ This element is used to display a material text area.
                 val = self.clean ? XP.clean(val) : val;
                 val = self.deburr ? XP.deburr(val) : val;
                 val = self.format ? XP[self.format](val) : val;
-                val = !self.noTrim ? XP.trim(val) : val;
+                val = !self.trimDisabled ? XP.trim(val) : val;
                 return XP.assign(self, {value: val});
             },
 
@@ -191,7 +203,6 @@ This element is used to display a material text area.
                 XP.setAttribute(self.injected, 'disabled', self.disabled);
                 XP.setAttribute(self.injected, 'minLength', self.minLength);
                 XP.setAttribute(self.injected, 'name', self.name);
-                XP.setAttribute(self.injected, 'pattern', self.pattern);
                 XP.setAttribute(self.injected, 'readonly', self.readonly);
                 XP.setAttribute(self.injected, 'required', self.required);
                 return self;
@@ -216,7 +227,7 @@ This element is used to display a material text area.
 
             // OBSERVERS
             observers: [
-                '_refresh(clean, deburr, format, minLength, pattern)'
+                '_refresh(clean, deburr, format, minLength)'
             ],
 
             // PROPERTIES
@@ -361,31 +372,6 @@ This element is used to display a material text area.
                 },
 
                 /**
-                 * If set to true, the input's value will not be trimmed.
-                 *
-                 * @attribute no-trim
-                 * @type boolean
-                 * @default false
-                 */
-                noTrim: {
-                    reflectToAttribute: true,
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * The input's validation pattern.
-                 *
-                 * @attribute pattern
-                 * @type string
-                 */
-                pattern: {
-                    reflectToAttribute: true,
-                    type: String,
-                    value: null
-                },
-
-                /**
                  * If set to true, the input is readonly.
                  *
                  * @attribute readonly
@@ -406,6 +392,19 @@ This element is used to display a material text area.
                  * @default false
                  */
                 required: {
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * If set to true, the input's value will not be trimmed.
+                 *
+                 * @attribute trim-disabled
+                 * @type boolean
+                 * @default false
+                 */
+                trimDisabled: {
                     reflectToAttribute: true,
                     type: Boolean,
                     value: false

@@ -3,34 +3,50 @@
 
 <dom-module id="mat-text-area-demo">
 
-    <style>
-        :host mat-text-area {
-            width: 256px;
-        }
-    </style>
-
     <template>
-        <mat-demo label="mat-text-area">
 
-            <div class="demo-title">Default</div>
+        <mat-demo label="Default">
+            <script type="text/html">
+                <mat-text-area label="Default"></mat-text-area>
+            </script>
             <mat-text-area label="Default"></mat-text-area>
-
-            <div class="demo-title">Disabled</div>
-            <mat-text-area value="Disabled" disabled></mat-text-area>
-
-            <div class="demo-title">Readonly</div>
-            <mat-text-area value="Readonly" floating-label readonly></mat-text-area>
-
-            <div class="demo-title">Floating label</div>
-            <mat-text-area label="Floating label" description="I am a description" floating-label></mat-text-area>
-
-            <div class="demo-title">Validation</div>
-            <mat-text-area label="Characters counter" max-length="10" floating-label></mat-text-area>
-
-            <div class="demo-title">Full Width</div>
-            <mat-text-area label="Full width" max-length="120" full-width></mat-text-area>
-
         </mat-demo>
+
+        <mat-demo label="Disabled">
+            <script type="text/html">
+                <mat-text-area value="Disabled" disabled></mat-text-area>
+            </script>
+            <mat-text-area value="Disabled" disabled></mat-text-area>
+        </mat-demo>
+
+        <mat-demo label="Readonly">
+            <script type="text/html">
+                <mat-text-area value="Readonly" floating-label readonly></mat-text-area>
+            </script>
+            <mat-text-area value="Readonly" floating-label readonly></mat-text-area>
+        </mat-demo>
+
+        <mat-demo label="Floating label">
+            <script type="text/html">
+                <mat-text-area label="Floating label" description="I am a description" floating-label></mat-text-area>
+            </script>
+            <mat-text-area label="Floating label" description="I am a description" floating-label></mat-text-area>
+        </mat-demo>
+
+        <mat-demo label="Validation">
+            <script type="text/html">
+                <mat-text-area label="Characters counter" max-length="10" floating-label></mat-text-area>
+            </script>
+            <mat-text-area label="Characters counter" max-length="10" floating-label></mat-text-area>
+        </mat-demo>
+
+        <mat-demo label="Full Width" padding-disabled>
+            <script type="text/html">
+                <mat-text-area label="Full width" max-length="120" full-width></mat-text-area>
+            </script>
+            <mat-text-area label="Full width" max-length="120" full-width></mat-text-area>
+        </mat-demo>
+
     </template>
 
     <script>
