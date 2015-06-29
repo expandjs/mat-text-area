@@ -12,6 +12,13 @@
             <mat-text-area label="Default"></mat-text-area>
         </mat-demo>
 
+        <mat-demo label="Binding and default value">
+            <script type="text/html">
+                <mat-text-area label="Default" model="{{myTextArea}}" value="Hello world"></mat-text-area>
+            </script>
+            <mat-text-area label="Default" model="{{myTextArea}}" value="Hello world"></mat-text-area>
+        </mat-demo>
+
         <mat-demo label="Disabled">
             <script type="text/html">
                 <mat-text-area value="Disabled" disabled></mat-text-area>
