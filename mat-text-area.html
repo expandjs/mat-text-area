@@ -17,7 +17,6 @@ This element is used to display a material text area.
 @repository https://github.com/ExpandJS/mat-text-area
 @demo http://expandjs.com/demo/mat-text-area
 
-@adapts mat-input-decorator /bower_components/mat-input-decorator/mat-input-decorator.html
 @behavior xp-input-behavior /bower_components/xp-input-behavior/xp-input-behavior.html
 
 @dependency polymer Polymer/polymer#^1.0.0
@@ -69,7 +68,7 @@ This element is used to display a material text area.
         <mat-input-decorator id="matTextAreaDecorator" chars="[[chars]]" description="[[description]]"
                              disabled="[[disabled]]" empty="[[empty]]" error="[[error]]" floated="{{floated}}"
                              floating-label="[[floatingLabel]]" focused="[[focused]]" full-width="[[fullWidth]]"
-                             input="[[input]]" invalid="[[invalid]]" invalid-message="[[invalidMessage]]"
+                             input="[[adaptee]]" invalid="[[invalid]]" invalid-message="[[invalidMessage]]"
                              label="[[label]]" max-length="[[maxLength]]" max-rows="[[maxRows]]"
                              min-rows="[[minRows]]" mirrored value="[[value]]">
             <content id="content" select="textarea"></content>
@@ -97,7 +96,7 @@ This element is used to display a material text area.
              */
             blur: function () {
                 var self = this;
-                self.input.focus();
+                self.adaptee.focus();
                 return self;
             },
 
@@ -109,7 +108,7 @@ This element is used to display a material text area.
              */
             focus: function () {
                 var self = this;
-                self.input.focus();
+                self.adaptee.focus();
                 return self;
             },
 
@@ -121,14 +120,28 @@ This element is used to display a material text area.
              */
             select: function () {
                 var self = this;
-                self.input.select();
+                self.adaptee.select();
                 return self;
             },
 
             /*********************************************************************/
 
             /**
-             * Commits from input's value.
+             * Set the adaptee.
+             *
+             * @method _adapt
+             * @returns {Element}
+             * @private
+             */
+            _adapt: function () {
+                var self = this;
+                self._setAdaptee(XP.appendChild(Polymer.dom(self), XP.createElement('textarea', {attributes: {value: self.value}})));
+                self.listen(self.adaptee, 'input', '_handleInput');
+                return self;
+            },
+
+            /**
+             * Reflects adapted input's `value` onto the element.
              *
              * @method _commitFrom
              * @returns {Element}
@@ -136,12 +149,12 @@ This element is used to display a material text area.
              */
             _commitFrom: function () {
                 var self = this;
-                self.value = self.input.value;
+                self.value = self.adaptee.value;
                 return self;
             },
 
             /**
-             * Commits to input's value.
+             * Reflects element's `value` onto the adapted input.
              *
              * @method _commitTo
              * @returns {Element}
@@ -149,12 +162,12 @@ This element is used to display a material text area.
              */
             _commitTo: function () {
                 var self = this;
-                if (self.value !== self.input.value) { self.input.value = self.value; }
+                if (self.value !== self.adaptee.value) { self.adaptee.value = self.value; }
                 return self;
             },
 
             /**
-             * Indexes the input.
+             * Reflects element's `tabIndex` onto the adapted input.
              *
              * @method _index
              * @param {number} value
@@ -163,26 +176,12 @@ This element is used to display a material text area.
              */
             _index: function (value) {
                 var self = this;
-                self.input.tabIndex = value;
+                self.adaptee.tabIndex = value;
                 return self;
             },
 
             /**
-             * Injects the input element.
-             *
-             * @method _inject
-             * @returns {Element}
-             * @private
-             */
-            _inject: function () {
-                var self = this;
-                self._setInput(XP.appendChild(Polymer.dom(self), XP.createElement('textarea', {attributes: {value: self.value}})));
-                self.listen(self.input, 'input', '_handleInput');
-                return self;
-            },
-
-            /**
-             * Sanitizes the input.
+             * Sanitizes adapted input's `value`.
              *
              * @method _sanitize
              * @returns {Element}
@@ -190,12 +189,12 @@ This element is used to display a material text area.
              */
             _sanitize: function () {
                 var self = this;
-                self.value = self.deburr ? XP.deburr(self.input.value) : self.value;
+                self.value = self.deburr ? XP.deburr(self.adaptee.value) : self.value;
                 return self;
             },
 
             /**
-             * Updates the input.
+             * Updates adapted input's attributes.
              *
              * @method _update
              * @returns {Element}
@@ -203,16 +202,16 @@ This element is used to display a material text area.
              */
             _update: function () {
                 var self = this;
-                XP.setAttribute(self.input, 'disabled', self.disabled);
-                XP.setAttribute(self.input, 'minLength', self.minLength);
-                XP.setAttribute(self.input, 'name', self.name);
-                XP.setAttribute(self.input, 'readonly', self.readonly);
-                XP.setAttribute(self.input, 'required', self.required);
+                XP.setAttribute(self.adaptee, 'disabled', self.disabled);
+                XP.setAttribute(self.adaptee, 'minLength', self.minLength);
+                XP.setAttribute(self.adaptee, 'name', self.name);
+                XP.setAttribute(self.adaptee, 'readonly', self.readonly);
+                XP.setAttribute(self.adaptee, 'required', self.required);
                 return self;
             },
 
             /**
-             * Validates the input.
+             * Validates adapted input's `value`.
              *
              * @method _validate
              * @returns {Element}
@@ -220,8 +219,8 @@ This element is used to display a material text area.
              */
             _validate: function () {
                 var self = this;
-                self._setInvalid(self.input.validity.valid === false);
-                self._setInvalidMessage(self.input.validationMessage || null);
+                self._setInvalid(self.adaptee.validity.valid === false);
+                self._setInvalidMessage(self.adaptee.validationMessage || null);
                 self._handleInput();
                 return self;
             },
@@ -230,7 +229,7 @@ This element is used to display a material text area.
 
             // OBSERVERS
             observers: [
-                '_refresh(deburr, minLength)'
+                '_refresh(deburr, minLength, readonly, required)'
             ],
 
             // PROPERTIES
@@ -401,8 +400,8 @@ This element is used to display a material text area.
                 if (self.deburr) { self._sanitize(); }
 
                 // Setting
-                self._setChars(self.input.value.length);
-                self._setEmpty(self.input.value.length === 0);
+                self._setChars(self.adaptee.value.length);
+                self._setEmpty(self.adaptee.value.length === 0);
                 self._setInvalid(!!self.invalidMessage || (self.maxLength > 0 && self.chars > self.maxLength));
             }
         });
