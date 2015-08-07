@@ -7,7 +7,54 @@ The complete set of contributors may be found at https://expandjs.github.io/CONT
 -->
 
 <!--
-This element is used to display a material text area.
+An element used to display a [Material Design multi-line text field](http://www.google.com/design/spec/components/text-fields.html#text-fields-multi-line-text-field).
+
+```html
+<mat-text-area label="First name"></mat-text-area>
+```
+
+It comes with a bundle of useful helpers, such as `label`, `description`, `character counter`
+and also provides all the validators from a native `<textarea>`.
+
+By default the label will act as a placeholder, however if you want it to be persistent, you can do
+it by setting `floating-label`. This way, it will place itself above the input when a value is present.
+
+```html
+<mat-text-area label="Location" floating-label></mat-text-area>
+```
+
+A short `description` can also be set underneath the input, to explain in a human readable way the
+validation process.
+
+```html
+<mat-text-area label="PIN Code" description="4-digit number"></mat-text-area>
+```
+
+If an error occurs, by default it will be shown underneath the input, however if the `description` is set,
+it will be highlighted with red instead of showing the error message.
+
+The character counter will be automatically created when `max-length` is set.
+
+```html
+<mat-text-area label="Message" max-length="140" full-width></mat-text-area>
+```
+
+To access the actual value, you have two attributes:
+
+- **value** is the current value as string
+- **model** does the same, however it adds some additional behaviors
+
+If the initial value was `null`, when the input is empty, the `model` returns to `null`
+instead of an empty string.
+
+This is useful for binding data that has not yet been initialized, needs to be created on
+the fly or comes from external sources.
+
+Generally, we recommend to use the `model` for data binding and `value` to set the default.
+
+```html
+<mat-text-area label="My input" model="{{myInput}}" value="..."></mat-text-area>
+```
 
 @element mat-text-area
 @description A custom element used to display a Material Design auto growing text-field
@@ -20,11 +67,11 @@ This element is used to display a material text area.
 @behavior xp-input-behavior /bower_components/xp-input-behavior/xp-input-behavior.html
 
 @dependency polymer Polymer/polymer#^1.0.0
-@dependency expandjs ExpandJS/expandjs#0.9.5
-@dependency mat-input-decorator ExpandJS/mat-input-decorator#0.9.5
-@dependency xp-input-behavior ExpandJS/xp-input-behavior#0.9.5
+@dependency expandjs ExpandJS/expandjs#0.9.6
+@dependency mat-input-decorator ExpandJS/mat-input-decorator#0.9.6
+@dependency xp-input-behavior ExpandJS/xp-input-behavior#0.9.6
 
-@devDependency mat-demo ExpandJS/mat-demo#0.9.5
+@devDependency mat-demo ExpandJS/mat-demo#0.9.6
 -->
 
 <link rel="import" href="../polymer/polymer.html">
@@ -68,9 +115,9 @@ This element is used to display a material text area.
         <mat-input-decorator id="matTextAreaDecorator" chars="[[chars]]" description="[[description]]"
                              disabled="[[disabled]]" empty="[[empty]]" error="[[error]]" floated="{{floated}}"
                              floating-label="[[floatingLabel]]" focused="[[focused]]" full-width="[[fullWidth]]"
-                             input="[[adaptee]]" invalid="[[invalid]]" invalid-message="[[invalidMessage]]"
-                             label="[[label]]" max-length="[[maxLength]]" max-rows="[[maxRows]]"
-                             min-rows="[[minRows]]" mirrored value="[[value]]">
+                             helper-disabled="[[helperDisabled]]" input="[[adaptee]]" invalid="[[invalid]]"
+                             invalid-message="[[invalidMessage]]" label="[[label]]" max-length="[[maxLength]]"
+                             max-rows="[[maxRows]]" min-rows="[[minRows]]" mirrored value="[[value]]">
             <content id="content" select="textarea"></content>
         </mat-input-decorator>
     </template>
@@ -295,6 +342,19 @@ This element is used to display a material text area.
                  * @default false
                  */
                 fullWidth: {
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * If set to true, the helper is hidden.
+                 *
+                 * @attribute helper-disabled
+                 * @type boolean
+                 * @default false
+                 */
+                helperDisabled: {
                     reflectToAttribute: true,
                     type: Boolean,
                     value: false
