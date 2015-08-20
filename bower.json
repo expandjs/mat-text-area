@@ -2,6 +2,7 @@
   "name": "mat-text-area",
   "license": "BSD-3-Clause",
   "version": "0.9.6",
+  "main": "mat-text-area.html",
   "description": "A custom element used to display a Material Design auto growing text-field",
   "homepage": "http://expandjs.com/elements/mat-text-area",
   "authors": [
@@ -17,9 +18,6 @@
     "html5",
     "expandjs",
     "web-components"
-  ],
-  "main": [
-    "mat-text-area.html"
   ],
   "ignore": [
     "**/.*"
