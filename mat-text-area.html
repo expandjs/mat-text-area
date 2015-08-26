@@ -188,8 +188,9 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
                     wait = self.asyncValidation && invalidMessage === undefined && self.adaptee.validity.valid !== false;
 
                 // Setting
-                if (!wait) { self._setInvalid(self.adaptee.validity.valid === false || !!invalidMessage); }
-                if (!wait) { self._setInvalidMessage(self.adaptee.validationMessage || invalidMessage || null); }
+                if (!wait) { self.adaptee.setCustomValidity(invalidMessage || ''); }
+                if (!wait) { self._setInvalid(self.adaptee.validity.valid === false); }
+                if (!wait) { self._setInvalidMessage(self.adaptee.validationMessage || null); }
 
                 // Handling
                 self._handleInput();
