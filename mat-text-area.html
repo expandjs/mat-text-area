@@ -171,6 +171,32 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
                 return self;
             },
 
+            /**
+             * Updates element's validation state.
+             *
+             * @method updateValidation
+             * @param {boolean | string} [invalidMessage = ""]
+             * @returns {Element}
+             */
+            updateValidation: function (invalidMessage) {
+
+                // Asserting
+                XP.assertArgument(XP.isVoid(invalidMessage) || XP.isFalse(invalidMessage) || XP.isString(invalidMessage), 1, 'string');
+
+                // Vars
+                var self = this,
+                    wait = self.asyncValidation && invalidMessage === undefined && self.adaptee.validity.valid !== false;
+
+                // Setting
+                if (!wait) { self._setInvalid(self.adaptee.validity.valid === false || !!invalidMessage); }
+                if (!wait) { self._setInvalidMessage(self.adaptee.validationMessage || invalidMessage || null); }
+
+                // Handling
+                self._handleInput();
+
+                return self;
+            },
+
             /*********************************************************************/
 
             /**
@@ -254,21 +280,6 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
                 XP.setAttribute(self.adaptee, 'name', self.name);
                 XP.setAttribute(self.adaptee, 'readonly', self.readonly);
                 XP.setAttribute(self.adaptee, 'required', self.required);
-                return self;
-            },
-
-            /**
-             * Validates adapted input's `value`.
-             *
-             * @method _validate
-             * @returns {Element}
-             * @private
-             */
-            _validate: function () {
-                var self = this;
-                self._setInvalid(self.adaptee.validity.valid === false);
-                self._setInvalidMessage(self.adaptee.validationMessage || null);
-                self._handleInput();
                 return self;
             },
 
