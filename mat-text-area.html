@@ -67,11 +67,11 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
 @behavior xp-input-behavior /bower_components/xp-input-behavior/xp-input-behavior.html
 
 @dependency polymer Polymer/polymer#^1.0.0
-@dependency expandjs ExpandJS/expandjs#0.9.7
-@dependency mat-input-decorator ExpandJS/mat-input-decorator#0.9.7
-@dependency xp-input-behavior ExpandJS/xp-input-behavior#0.9.7
+@dependency expandjs ExpandJS/expandjs#0.9.8
+@dependency mat-input-decorator ExpandJS/mat-input-decorator#0.9.8
+@dependency xp-input-behavior ExpandJS/xp-input-behavior#0.9.8
 
-@devDependency mat-demo ExpandJS/mat-demo#0.9.7
+@devDependency mat-demo ExpandJS/mat-demo#0.9.8
 -->
 
 <link rel="import" href="../polymer/polymer.html">
@@ -184,13 +184,14 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
                 XP.assertArgument(XP.isVoid(invalidMessage) || XP.isFalse(invalidMessage) || XP.isString(invalidMessage), 1, 'string');
 
                 // Vars
-                var self = this,
-                    wait = self.asyncValidation && invalidMessage === undefined && self.adaptee.validity.valid !== false;
+                var self = this;
+
+                // Customizing
+                if (invalidMessage !== undefined) { self.adaptee.setCustomValidity(invalidMessage || ''); }
 
                 // Setting
-                if (!wait) { self.adaptee.setCustomValidity(invalidMessage || ''); }
-                if (!wait) { self._setInvalid(self.adaptee.validity.valid === false); }
-                if (!wait) { self._setInvalidMessage(self.adaptee.validationMessage || null); }
+                self._setInvalidMessage(self.adaptee.validationMessage || null);
+                self._setInvalid(self.adaptee.validity.valid === false);
 
                 // Handling
                 self._handleInput();
