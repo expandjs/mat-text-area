@@ -81,37 +81,38 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
 
 <dom-module id="mat-text-area">
 
-    <style>
-        :host {
-            display: block;
-            overflow: visible;
-            text-align: left;
-        }
+    <template>
 
-        :host([inline]) {
-            display: inline-block;
-            width: 182px;
-        }
+        <style>
+            :host {
+                display: block;
+                overflow: visible;
+                text-align: left;
+            }
 
-        :host([full-width]) {
-            display: block;
-            margin: 0;
-            padding: 0 16px;
-            width: auto !important;
-        }
-
-        /* TABLET */
-
-        @media (min-width: 960px) {
+            :host([inline]) {
+                display: inline-block;
+                width: 182px;
+            }
 
             :host([full-width]) {
+                display: block;
                 margin: 0;
-                padding: 0 24px;
+                padding: 0 16px;
+                width: auto !important;
             }
-        }
-    </style>
 
-    <template>
+            /* TABLET */
+
+            @media (min-width: 960px) {
+
+                :host([full-width]) {
+                    margin: 0;
+                    padding: 0 24px;
+                }
+            }
+        </style>
+
         <mat-input-decorator id="matTextAreaDecorator" chars="[[chars]]" description="[[description]]"
                              disabled="[[disabled]]" empty="[[empty]]" error="[[error]]" floated="{{floated}}"
                              floating-label="[[floatingLabel]]" focused="[[focused]]" full-width="[[fullWidth]]"
@@ -120,6 +121,7 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
                              max-rows="[[maxRows]]" min-rows="[[minRows]]" mirrored value="[[value]]">
             <content id="content" select="textarea"></content>
         </mat-input-decorator>
+
     </template>
 
     <script>
