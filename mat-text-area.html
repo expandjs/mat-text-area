@@ -212,7 +212,7 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
              */
             _adapt: function () {
                 var self = this;
-                self._setAdaptee(XP.appendChild(Polymer.dom(self), XP.createElement('textarea', {properties: {value: self.value}})));
+                self._setAdaptee(XP.appendChild(Polymer.dom(self), XP.createElement('textarea', {properties: {textContent: self.value}})));
                 self.listen(self.adaptee, 'input', '_handleInput');
                 return self;
             },
