@@ -67,11 +67,11 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
 @behavior xp-input-behavior /bower_components/xp-input-behavior/xp-input-behavior.html
 
 @dependency polymer Polymer/polymer#^1.1.0
-@dependency expandjs ExpandJS/expandjs#0.9.9
-@dependency mat-input-decorator ExpandJS/mat-input-decorator#0.9.9
-@dependency xp-input-behavior ExpandJS/xp-input-behavior#0.9.9
+@dependency expandjs ExpandJS/expandjs#0.9.10
+@dependency mat-input-decorator ExpandJS/mat-input-decorator#0.9.10
+@dependency xp-input-behavior ExpandJS/xp-input-behavior#0.9.10
 
-@devDependency mat-demo ExpandJS/mat-demo#0.9.9
+@devDependency mat-demo ExpandJS/mat-demo#0.9.10
 -->
 
 <link rel="import" href="../polymer/polymer.html">
@@ -158,18 +158,6 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
             focus: function () {
                 var self = this;
                 self.adaptee.focus();
-                return self;
-            },
-
-            /**
-             * Selects the input.
-             *
-             * @method select
-             * @returns {Element}
-             */
-            select: function () {
-                var self = this;
-                self.adaptee.select();
                 return self;
             },
 
@@ -267,6 +255,19 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
             _sanitize: function () {
                 var self = this;
                 self.value = self.deburr ? XP.deburr(self.adaptee.value) : self.value;
+                return self;
+            },
+
+            /**
+             * Selects the adapted input.
+             *
+             * @method _select
+             * @returns {Element}
+             * @private
+             */
+            _select: function () {
+                var self = this;
+                self.adaptee.select();
                 return self;
             },
 
