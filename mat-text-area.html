@@ -67,11 +67,11 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
 @behavior xp-input-behavior /bower_components/xp-input-behavior/xp-input-behavior.html
 
 @dependency polymer Polymer/polymer#^1.1.0
-@dependency expandjs ExpandJS/expandjs#0.9.10
-@dependency mat-input-decorator ExpandJS/mat-input-decorator#0.9.10
-@dependency xp-input-behavior ExpandJS/xp-input-behavior#0.9.10
+@dependency expandjs ExpandJS/expandjs#0.9.11
+@dependency mat-input-decorator ExpandJS/mat-input-decorator#0.9.11
+@dependency xp-input-behavior ExpandJS/xp-input-behavior#0.9.11
 
-@devDependency mat-demo ExpandJS/mat-demo#0.9.10
+@devDependency mat-demo ExpandJS/mat-demo#0.9.11
 -->
 
 <link rel="import" href="../polymer/polymer.html">
@@ -158,34 +158,6 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
             focus: function () {
                 var self = this;
                 self.adaptee.focus();
-                return self;
-            },
-
-            /**
-             * Updates element's validation state.
-             *
-             * @method updateValidation
-             * @param {boolean | string} [invalidMessage = ""]
-             * @returns {Element}
-             */
-            updateValidation: function (invalidMessage) {
-
-                // Asserting
-                XP.assertArgument(XP.isVoid(invalidMessage) || XP.isFalse(invalidMessage) || XP.isString(invalidMessage), 1, 'string');
-
-                // Vars
-                var self = this;
-
-                // Customizing
-                if (invalidMessage !== undefined) { self.adaptee.setCustomValidity(invalidMessage || ''); }
-
-                // Setting
-                self._setInvalidMessage(self.adaptee.validationMessage || null);
-                self._setInvalid(self.adaptee.validity.valid === false);
-
-                // Handling
-                self._handleInput();
-
                 return self;
             },
 
@@ -285,6 +257,35 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
                 XP.setAttribute(self.adaptee, 'name', self.name);
                 XP.setAttribute(self.adaptee, 'readonly', self.readonly);
                 XP.setAttribute(self.adaptee, 'required', self.required);
+                return self;
+            },
+
+            /**
+             * Updates element's validation state.
+             *
+             * @method _validate
+             * @param {boolean | string} [invalidMessage = ""]
+             * @returns {Element}
+             * @private
+             */
+            _validate: function (invalidMessage) {
+
+                // Asserting
+                XP.assertArgument(XP.isVoid(invalidMessage) || XP.isFalse(invalidMessage) || XP.isString(invalidMessage), 1, 'string');
+
+                // Vars
+                var self = this;
+
+                // Customizing
+                if (invalidMessage !== undefined) { self.adaptee.setCustomValidity(invalidMessage || ''); }
+
+                // Setting
+                self._setInvalidMessage(self.adaptee.validationMessage || null);
+                self._setInvalid(self.adaptee.validity.valid === false);
+
+                // Handling
+                self._handleInput();
+
                 return self;
             },
 
