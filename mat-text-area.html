@@ -7,7 +7,7 @@ The complete set of contributors may be found at https://expandjs.github.io/CONT
 -->
 
 <!--
-An element used to display a [Material Design multi-line text field](http://www.google.com/design/spec/components/text-fields.html#text-fields-multi-line-text-field).
+A custom element used to display a [Material Design multi-line text field](http://www.google.com/design/spec/components/text-fields.html#text-fields-multi-line-text-field).
 
 ```html
 <mat-text-area label="First name"></mat-text-area>
@@ -57,70 +57,52 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
 ```
 
 @element mat-text-area
-@description A custom element used to display a Material Design auto growing text-field
-@keywords material design, material text area, material input, web app, html5, expandjs, web-components
+@description A custom element used to display a Material Design multi-line text-field
+@keywords material design, material input, expandjs, web app, custom elements, web-components
 @group inputs
+@hot
+
 @homepage http://expandjs.com/elements/mat-text-area
 @repository https://github.com/ExpandJS/mat-text-area
 @demo http://expandjs.com/demo/mat-text-area
 
-@behavior xp-input-behavior /bower_components/xp-input-behavior/xp-input-behavior.html
+@behavior mat-input-behavior /bower_components/mat-input-behavior/mat-input-behavior.html
 
-@dependency polymer Polymer/polymer#^1.1.0
-@dependency expandjs ExpandJS/expandjs#0.9.11
-@dependency mat-input-decorator ExpandJS/mat-input-decorator#0.9.11
-@dependency xp-input-behavior ExpandJS/xp-input-behavior#0.9.11
+@dependency polymer Polymer/polymer#^1.2.0
+@dependency expandjs ExpandJS/expandjs#0.10.0
+@dependency mat-ink ExpandJS/mat-ink#0.10.0
+@dependency mat-input-behavior ExpandJS/mat-input-behavior#0.10.0
 
-@devDependency mat-demo ExpandJS/mat-demo#0.9.11
+@devDependency mat-demo ExpandJS/mat-demo#0.10.0
 -->
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../expandjs/expandjs.html">
-<link rel="import" href="../mat-input-decorator/mat-input-decorator.html">
-<link rel="import" href="../xp-input-behavior/xp-input-behavior.html">
+<link rel="import" href="../mat-ink/mat-ink.html">
+<link rel="import" href="../mat-input-behavior/mat-input-behavior.html">
+<link rel="import" href="../mat-input-behavior/mat-input-styles.html">
 
 <dom-module id="mat-text-area">
 
-    <template>
+    <template strip-whitespace>
 
-        <style>
-            :host {
-                display: block;
-                overflow: visible;
-                text-align: left;
-            }
+        <style include="mat-input-styles"></style>
 
-            :host([inline]) {
-                display: inline-block;
-                width: 182px;
-            }
-
-            :host([full-width]) {
-                display: block;
-                margin: 0;
-                padding: 0 16px;
-                width: auto !important;
-            }
-
-            /* TABLET */
-
-            @media (min-width: 960px) {
-
-                :host([full-width]) {
-                    margin: 0;
-                    padding: 0 24px;
-                }
-            }
-        </style>
-
-        <mat-input-decorator id="matTextAreaDecorator" chars="[[chars]]" description="[[description]]"
-                             disabled="[[disabled]]" empty="[[empty]]" error="[[error]]" floated="{{floated}}"
-                             floating-label="[[floatingLabel]]" focused="[[focused]]" full-width="[[fullWidth]]"
-                             helper-disabled="[[helperDisabled]]" input="[[adaptee]]" invalid="[[invalid]]"
-                             invalid-message="[[invalidMessage]]" label="[[label]]" max-length="[[maxLength]]"
-                             max-rows="[[maxRows]]" min-rows="[[minRows]]" mirrored value="[[value]]">
-            <content id="content" select="textarea"></content>
-        </mat-input-decorator>
+        <div class="wrapper">
+            <div class="main">
+                <mat-ink class="label" disabled="[[disabled]]" opacity="[[_computeLabelOpacity(floated)]]">[[label]]</mat-ink>
+                <div class="mirror"></div>
+                <mat-ink class="holder" disabled="[[disabled]]"><content select="textarea"></content></mat-ink>
+            </div>
+            <div class="underline">
+                <mat-ink class="default" opacity="divider"></mat-ink>
+                <mat-ink class="focused" opacity="divider"></mat-ink>
+            </div>
+            <mat-ink class="helper" disabled="[[disabled]]" opacity="hint">
+                <div class="counter">[[_computeCounter(chars, maxLength)]]</div>
+                <div class="description">[[_computeDescription(description, error, invalid, invalidMessage)]]</div>
+            </mat-ink>
+        </div>
 
     </template>
 
@@ -132,139 +114,136 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
 
             // BEHAVIORS
             behaviors: [
-                Polymer.XPInputBehavior
+                Polymer.MatInputBehavior
             ],
 
             /*********************************************************************/
 
             /**
-             * Blurs the input.
-             *
-             * @method blur
-             * @returns {Element}
-             */
-            blur: function () {
-                var self = this;
-                self.adaptee.focus();
-                return self;
-            },
-
-            /**
-             * Focuses the input.
-             *
-             * @method focus
-             * @returns {Element}
-             */
-            focus: function () {
-                var self = this;
-                self.adaptee.focus();
-                return self;
-            },
-
-            /*********************************************************************/
-
-            /**
-             * Set the adaptee.
-             *
-             * @method _adapt
-             * @returns {Element}
-             * @private
-             */
-            _adapt: function () {
-                var self = this;
-                self._setAdaptee(XP.appendChild(Polymer.dom(self), XP.createElement('textarea', {properties: {textContent: self.value}})));
-                self.listen(self.adaptee, 'input', '_handleInput');
-                return self;
-            },
-
-            /**
-             * Reflects adapted input's `value` onto the element.
+             * Reflects the native input's `value` onto the element.
              *
              * @method _commitFrom
              * @returns {Element}
              * @private
              */
             _commitFrom: function () {
+
+                // Vars
                 var self = this;
-                self.value = self.adaptee.value;
+
+                // Setting
+                self.value = self.input.value;
+
                 return self;
             },
 
             /**
-             * Reflects element's `value` onto the adapted input.
+             * Reflects the element's `tabIndex` onto the native input.
+             *
+             * @method _commitIndex
+             * @param {number} value
+             * @returns {Element}
+             * @private
+             */
+            _commitIndex: function (value) {
+
+                // Vars
+                var self = this;
+
+                // Setting
+                self.input.tabIndex = value;
+
+                return self;
+            },
+
+            /**
+             * Reflects the element's `value` onto the native input.
              *
              * @method _commitTo
              * @returns {Element}
              * @private
              */
             _commitTo: function () {
+
+                // Vars
                 var self = this;
-                if (self.value !== self.adaptee.value) { self.adaptee.value = self.value; }
+
+                // Setting
+                if (self.value !== self.input.value) { self.input.value = self.value; }
+
                 return self;
             },
 
             /**
-             * Reflects element's `tabIndex` onto the adapted input.
+             * Injects the native input.
              *
-             * @method _index
-             * @param {number} value
+             * @method _inject
              * @returns {Element}
              * @private
              */
-            _index: function (value) {
-                var self = this;
-                self.adaptee.tabIndex = value;
+            _inject: function () {
+
+                // Vars
+                var self  = this,
+                    input = document.createElement('textarea');
+
+                // Setting
+                input.textContent = self.value;
+
+                // Listening
+                self.listen(input, 'input', '_inputHandler');
+
+                // Appending
+                self._setInput(Polymer.dom(self).appendChild(input));
+
                 return self;
             },
 
             /**
-             * Sanitizes adapted input's `value`.
+             * Sanitize the native input's `value`.
              *
              * @method _sanitize
              * @returns {Element}
              * @private
              */
             _sanitize: function () {
+
+                // Vars
                 var self = this;
-                self.value = self.deburr ? XP.deburr(self.adaptee.value) : self.value;
+
+                // Setting
+                if (self.deburr) { self.value = XP.deburr(self.input.value); }
+
                 return self;
             },
 
             /**
-             * Selects the adapted input.
-             *
-             * @method _select
-             * @returns {Element}
-             * @private
-             */
-            _select: function () {
-                var self = this;
-                self.adaptee.select();
-                return self;
-            },
-
-            /**
-             * Updates adapted input's attributes.
+             * Updates the native input's attributes.
              *
              * @method _update
              * @returns {Element}
              * @private
              */
             _update: function () {
+
+                // Vars
                 var self = this;
-                XP.setAttribute(self.adaptee, 'disabled', self.disabled);
-                XP.setAttribute(self.adaptee, 'minLength', self.minLength);
-                XP.setAttribute(self.adaptee, 'name', self.name);
-                XP.setAttribute(self.adaptee, 'readonly', self.readonly);
-                XP.setAttribute(self.adaptee, 'required', self.required);
+
+                // Setting
+                XP.setAttribute(self.input, 'disabled', self.disabled);
+                XP.setAttribute(self.input, 'minLength', self.minLength);
+                XP.setAttribute(self.input, 'name', self.name);
+                XP.setAttribute(self.input, 'readonly', self.readonly);
+                XP.setAttribute(self.input, 'required', self.required);
+
                 return self;
             },
 
             /**
-             * Updates element's validation state.
+             * Validates the native input's `value`.
              *
              * @method _validate
-             * @param {boolean | string} [invalidMessage = ""]
+             * @param {boolean | string} [invalidMessage]
              * @returns {Element}
              * @private
              */
@@ -277,14 +256,14 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
                 var self = this;
 
                 // Customizing
-                if (invalidMessage !== undefined) { self.adaptee.setCustomValidity(invalidMessage || ''); }
+                if (XP.isDefined(invalidMessage)) { self.input.setCustomValidity(invalidMessage || ''); }
 
                 // Setting
-                self._setInvalidMessage(self.adaptee.validationMessage || null);
-                self._setInvalid(self.adaptee.validity.valid === false);
+                self._setInvalidMessage(self.input.validationMessage || null);
+                self._setInvalid(self.input.validity.valid === false);
 
                 // Handling
-                self._handleInput();
+                self._inputHandler();
 
                 return self;
             },
@@ -293,7 +272,7 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
 
             // OBSERVERS
             observers: [
-                '_refresh(deburr, minLength, readonly, required)'
+                'update(deburr, maxLength, minLength, readonly, required)'
             ],
 
             // PROPERTIES
@@ -320,8 +299,7 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
                  */
                 description: {
                     reflectToAttribute: true,
-                    type: String,
-                    value: null
+                    type: String
                 },
 
                 /**
@@ -333,9 +311,11 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
                  * @readonly
                  */
                 floated: {
+                    computed: '_computeFloated(empty, floatingLabel, focused, fullWidth, label)',
                     notify: true,
                     reflectToAttribute: true,
-                    type: Boolean
+                    type: Boolean,
+                    value: false
                 },
 
                 /**
@@ -378,19 +358,6 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
                 },
 
                 /**
-                 * If set to true, the input is inline.
-                 *
-                 * @attribute inline
-                 * @type boolean
-                 * @default false
-                 */
-                inline: {
-                    reflectToAttribute: true,
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
                  * The input's max characters number.
                  *
                  * @attribute max-length
@@ -398,8 +365,7 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
                  */
                 maxLength: {
                     reflectToAttribute: true,
-                    type: Number,
-                    value: null
+                    type: Number
                 },
 
                 /**
@@ -410,8 +376,7 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
                  */
                 maxRows: {
                     reflectToAttribute: true,
-                    type: Number,
-                    value: null
+                    type: Number
                 },
 
                 /**
@@ -422,8 +387,7 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
                  */
                 minLength: {
                     reflectToAttribute: true,
-                    type: Number,
-                    value: null
+                    type: Number
                 },
 
                 /**
@@ -434,8 +398,7 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
                  */
                 minRows: {
                     reflectToAttribute: true,
-                    type: Number,
-                    value: null
+                    type: Number
                 },
 
                 /**
@@ -467,18 +430,27 @@ Generally, we recommend to use the `model` for data binding and `value` to set t
 
             /*********************************************************************/
 
+            // LISTENER
+            created: function () {
+
+                // Classifying
+                this.classList.add('text-area');
+            },
+
+            /*********************************************************************/
+
             // HANDLER
-            _handleInput: function () {
+            _inputHandler: function () {
 
                 // Vars
                 var self = this;
 
-                // Sanitizing
-                if (self.deburr) { self._sanitize(); }
+                // Super
+                Polymer.XPInputBehaviorImp._inputHandler.apply(self, arguments);
 
                 // Setting
-                self._setChars(self.adaptee.value.length);
-                self._setEmpty(self.adaptee.value.length === 0);
+                self._setChars(self.input.value.length);
+                self._setEmpty(self.input.value.length === 0);
                 self._setInvalid(!!self.invalidMessage || (self.maxLength > 0 && self.chars > self.maxLength));
             }
         });
