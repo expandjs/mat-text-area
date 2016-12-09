@@ -1,3 +1,3 @@
 # mat-text-area
 
-See the [`documentation page`](http://expandjs.com/elements/mat-text-area) for more information.
+This repository has been merged into [`mat-elements`](https://github.com/expandjs/max-elements).
